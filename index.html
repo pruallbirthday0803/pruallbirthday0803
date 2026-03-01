@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Meri Pruall 🥳</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  color:white;
+  overflow-x:hidden;
+  background: linear-gradient(-45deg,#ff4e8d,#ff2e73,#ff8fab,#ffb3c6);
+  background-size:400% 400%;
+  animation: gradientMove 12s ease infinite;
+}
+@keyframes gradientMove{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+.page{display:none;text-align:center;padding:40px 20px;}
+.active{display:block;}
+
+.card{
+  background:rgba(0,0,0,0.45);
+  padding:30px;
+  border-radius:20px;
+  max-width:900px;
+  margin:auto;
+  backdrop-filter:blur(12px);
+
+  max-height: 80vh;
+overflow-y: auto;
+}
+.bigText{
+  white-space: pre-wrap;
+  line-height: 2.2;
+  font-size: 28px;
+  text-align: left;
+}
+
+button{
+  padding:12px 25px;
+  margin:10px;
+  border:none;
+  border-radius:25px;
+  font-weight:bold;
+  cursor:pointer;
+  background:white;
+  color:#ff2e73;
+  transition:0.3s;
+}
+button:hover{transform:scale(1.1);}
+
+/* GAME */
+#board{
+  display:grid;
+  grid-template-columns:repeat(3,90px);
+  gap:12px;
+  justify-content:center;
+  margin:25px 0;
+}
+.cell{
+  width:90px;height:90px;
+  background:white;
+  border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:38px;font-weight:bold;color:#ff2e73;
+  cursor:pointer;
+}
+
+/* COUNTDOWN */
+#countdown{
+  position:fixed;inset:0;background:black;
+  display:none;justify-content:center;align-items:center;
+  z-index:9999;flex-direction:column;
+}
+#countText{font-size:20vw;font-weight:bold;text-shadow:0 0 60px pink;}
+.bigBirthday{
+  font-size:8vw;
+  text-align:center;
+  text-shadow:0 0 30px pink;
+  padding:20px;
+}
+
+/* CONFETTI */
+.confetti{
+  position:fixed;width:10px;height:10px;
+  top:-10px;pointer-events:none;
+  animation:fall 3s linear forwards;z-index:1000;
+}
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(720deg);opacity:0;}
+}
+
+/* FLOATING TEXT */
+.floating{
+  position:fixed;
+  bottom:-30px;
+  opacity:0.7;
+  pointer-events:none;
+  animation: floatUp 8s linear forwards;
+  font-weight:bold;
+  z-index:1;
+}
+@keyframes floatUp{
+  0%{transform:translateY(0);}
+  100%{transform:translateY(-110vh);}
+}
+
+/* SURPRISE GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:20px;
+  margin-top:30px;
+}
+.box{
+  background:white;
+  color:#ff2e73;
+  border-radius:20px;
+  padding:20px;
+  cursor:pointer;
+  transition:0.3s;
+}
+.box:hover{transform:scale(1.05);}
+</style>
+</head>
+<body>
+    <audio id="birthdaySong" preload="auto">
+  <source src="birthday.mp4" type="audio/mpeg">
+</audio>
+
+<!-- PASSWORD -->
+<div id="page1" class="page active">
+<div class="card">
+<h2>Enter Password 🎂</h2>
+<input type="password" id="pass"><br><br>
+<button onclick="checkPass()">Enter</button>
+</div></div>
+
+<!-- WANT -->
+<div id="page2" class="page">
+<div class="card">
+<h2>Want to see surprise?</h2>
+<button onclick="show(3)">Yes</button>
+<button onclick="show(4)">No</button>
+</div></div>
+
+<!-- TEASE -->
+<div id="page3" class="page">
+<div class="card">
+<p>Shakal dekhi h jo surprise chaiye??... phle muh dhoke aa fr milega surprise 😂</p>
+<button onclick="show(5)">Next</button>
+</div></div>
+
+<div id="page4" class="page">
+<div class="card">
+<p>Tera bdy hoga pr chlegi meri he surprise toh dekhna pdega 😎</p>
+<button onclick="show(3)">Lets see surprise</button>
+</div></div>
+
+<!-- MUH DHOKE -->
+<div id="page5" class="page">
+<div class="card">
+<p>Beshram h bina muh dhoye aagyi surprise dekhne 😑😑
+Koi ni dekhle tu bhi kya yaad rkhei 🫶🏻🫶🏻</p>
+<button onclick="show(9);startGame()">Next</button>
+</div></div>
+
+<!-- GAME -->
+<div id="page9" class="page">
+<div class="card">
+<h2>Win to unlock surprises 💖</h2>
+<div id="board"></div>
+<p id="winMsg"></p>
+<button id="seeBtn" style="display:none" onclick="startCountdown()">See Surprise</button>
+</div></div>
+
+<!-- SURPRISE SELECTION -->
+<div id="page10" class="page">
+<div class="card">
+<h2>Select Surprise 🎁</h2>
+
+<div class="grid">
+<div class="box" onclick="show(11);burst()">
+<h3>🎀</h3>
+<h3>Surprise 1</h3>
+</div>
+
+<div class="box" onclick="show(12);burst()">
+<h3>🎂</h3>
+<h3>Surprise 2</h3>
+</div>
+
+<div class="box" onclick="show(13);burst()">
+<h3>🎉</h3>
+<h3>Surprise 3</h3>
+</div>
+</div>
+
+<br>
+<button onclick="show(7)">Next</button>
+</div></div>
+
+<!-- SURPRISE 1 -->
+<div id="page11" class="page">
+<div class="card">
+<h2>Happy Birthday Prualllllllllllllllllll 🥳</h2>
+<div style="font-size:15vw;margin:30px 0;">🌸🌹</div>
+<h2>For youu 🥳</h2>
+<button onclick="show(10)">Back</button>
+</div></div>
+
+<!-- SURPRISE 2 -->
+<div id="page12" class="page">
+<div class="card">
+<h2>Happy Birthday Prualllllllllllllllllll 🥳</h2>
+<div style="font-size:15vw;margin:30px 0;">🎂</div>
+<h2>Take your cakeee 🫶🏻</h2>
+<button onclick="show(10)">Back</button>
+</div></div>
+
+<!-- SURPRISE 3 -->
+<div id="page13" class="page">
+<div class="card">
+<h2>Happy Birthday Prualllllllllllllllllll 🥳</h2>
+<pre class="bigText">
+  Meri Prualllllllllllllllllll aaj tera din h bht khaas din h tuje apna bdy ni psnd pr mere liye aaj bht special day h or muje 
+  100% pta h k tuje bss islie ni psnd kyuki tuje kisi ne khaas feel ni krwaya.
+Pr syd bhagwaan ne teri suni h or muje teri life m bheja h,
+Orrr islie aaj tere liye itne efforts lgaye jaree h beteeee respct krlee.
+Or dekh kitna bda pgl hu bdy k lie bnai h ky bt krne lga 😂.
+Chl ab point p aate haii
+Happiessttt Birthdayyyy too youuuuuuuuuuuu 🫀🥳🎂.
+Tuje duniya ki hr khushiya mile mere hisse ki khushi tuje miljaye ooorrrrrr sbseeee acha hogaaa k m he tuje miljau 😁😁.
+Chl ye toh hone se rahaa but mere hisse ki khushi toh mile he mile.
+Or m ye bhi chhata hu k teri khushi ka reason bnu m hmesha kbh tuje dukhi na kru.
+M bhot baar kr deta hu but yrr wo merse glti ho jati h m mnn se ni krta or ye chiz muje late realise hoti h 😕😟.
+Mne bhot br bola h durr jane ki baat mt kiya kr lekin tu sunti he ni h pta nhi kyu hr br same chiz krti h.
+Beta tera bdy hoga apne ghr m toh ese he glti ginwaunga krle jo krna h rokk ske toh rokk lio 🤪🤪.
+Are chorddd aaj mzk ni aaj tera din h aaj tuje khush krne ki zimmedari meri.
+Yaar tu bhot achi h tu saari khushiyan deserve krti h.
+Seriously tuje khone se bht jaada drta hu m.
+Chl theekkkk haiii khush rhiyooooo enjoyyy krioo or bhulio mt
+1. tuje pyar krne wala bhi h
+2. tere sath dosti nibhane wala bhi h 
+3. tera khyaal rkhne wala bhi h 
+4. tuje khone se drne wala bhi h
+5. Tuje khush krne wala bhi h
+6. Tere liye efforts lgane wala bhi h
+7. Or zindgi bhr k liye tera stand lene wala bhi h
+Ab Byeeeeeeeeeeeeee.
+Happiessstttttttt Birthdayyyyy Againnnnnn. 🫀🩷💚🧡🩵🤍❤️🖤🩶🖤🩶🤎💛💙💚🖤❤️
+🩵🤍🩵🤎🩶💚😑💚
+💚🫀🖤💚🫶🏻💚💖💚❤️🖤🫀🤎💜❤️🤎💚💚🫀🖤❤️💜💜🤎🧡💛🧡💚
+💛🩶🤎🩶🤎🩶🤎🩶🤎🤎🩶💚🧡💚🤎
+❤️🤎🤎❤️🤎🫶🏻🫶🏻🫶🏻🫶🏻🫶🏻🫀🫶🏻🫀🫶🏻🫀🫶🏻🫀🫶🏻🫀🫶🏻🫀🫶🏻🫀🫶🏻🫀🩷💚 💖</pre>
+<button onclick="show(10)">Back</button>
+<button onclick="show(7)">Next</button>
+</div></div>
+
+<!-- DO YOU LIKE ME -->
+<div id="page7" class="page">
+<div class="card">
+<h2>Do you like the surprise or me? 🤭</h2>
+<button id="surpriseBtn" onclick="dodge()">Surprise</button>
+<button onclick="show(8)">You ❤️</button>
+</div></div>
+
+<!-- TEDDY -->
+<div id="page8" class="page">
+<div class="card">
+<h2>Ohh you like meeeee?? 🥹💖</h2>
+<div id="teddy" style="font-size:120px;">🧸💖</div>
+</div></div>
+
+<!-- COUNTDOWN -->
+<div id="countdown">
+<h1 id="countText">3</h1>
+</div>
+
+<script>
+function show(n){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById("page"+n).classList.add("active");
+}
+
+function checkPass(){
+if(document.getElementById("pass").value.toLowerCase()=="pruall"){
+show(2);
+
+let song = document.getElementById("birthdaySong");
+song.play().catch(()=>{});
+
+}else alert("Wrong password 😒");
+}
+
+let board=["","","","","","","","",""];
+let gameActive=true;
+const winPatterns=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+function startGame(){
+board=["","","","","","","","",""];
+gameActive=true;
+document.getElementById("board").innerHTML="";
+document.getElementById("winMsg").innerText="";
+document.getElementById("seeBtn").style.display="none";
+board.forEach((_,i)=>{
+let c=document.createElement("div");
+c.className="cell";
+c.onclick=()=>move(i);
+document.getElementById("board").appendChild(c);
+});
+}
+
+function move(i){
+if(board[i]!=""||!gameActive)return;
+board[i]="X";render();
+if(checkWin("X")){
+gameActive=false;
+document.getElementById("winMsg").innerText="YOU WIN NOW YOU CAN SEE SURPRISE 🥳";
+document.getElementById("seeBtn").style.display="inline-block";
+return;
+}
+computer();
+}
+
+function computer(){
+let empty=board.map((v,i)=>v==""?i:null).filter(v=>v!=null);
+if(empty.length==0)return;
+board[empty[Math.floor(Math.random()*empty.length)]]="O";
+render();
+}
+
+function checkWin(p){
+return winPatterns.some(a=>a.every(i=>board[i]==p));
+}
+
+function render(){
+document.querySelectorAll(".cell").forEach((c,i)=>c.innerText=board[i]);
+}
+
+function startCountdown(){
+let count=3;
+let cd=document.getElementById("countdown");
+let txt=document.getElementById("countText");
+cd.style.display="flex";
+txt.innerText="3";
+let interval=setInterval(()=>{
+count--;
+if(count>0)txt.innerText=count;
+else{
+clearInterval(interval);
+txt.innerHTML='<div class="bigBirthday">HAPPY BIRTHDAY MERI PRUALL 🥳🩷</div>';
+setTimeout(()=>{
+cd.style.display="none";
+show(10);
+startFloating();
+},2000);
+}
+},1000);
+}
+
+function burst(){
+for(let i=0;i<200;i++){
+let conf=document.createElement("div");
+conf.className="confetti";
+conf.style.left=Math.random()*100+"vw";
+conf.style.backgroundColor = `hsl(${Math.random()*360},100%,50%)`;
+document.body.appendChild(conf);
+setTimeout(()=>conf.remove(),3000);
+}
+}
+
+let floatingStarted=false;
+function startFloating(){
+if(floatingStarted) return;
+floatingStarted=true;
+setInterval(()=>{
+const el=document.createElement("div");
+el.className="floating";
+el.innerHTML="HAPPY BIRTHDAY MERI PRUALL 🥳🩷";
+el.style.left=Math.random()*100+"vw";
+el.style.fontSize=(Math.random()*15+20)+"px";
+document.body.appendChild(el);
+setTimeout(()=>el.remove(),8000);
+},1200);
+}
+
+function dodge(){
+let btn=document.getElementById("surpriseBtn");
+btn.style.position="absolute";
+btn.style.top=Math.random()*200+"px";
+btn.style.left=Math.random()*200+"px";
+}
+</script>
+</body>
+</html>
